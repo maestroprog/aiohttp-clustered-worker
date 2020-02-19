@@ -17,6 +17,7 @@ import setproctitle
 
 from aiohttp import web
 from aiohttp.web_app import Application
+from .app import ClusteredApplication
 
 
 class AbstractWorker:
@@ -45,6 +46,9 @@ class AbstractWorker:
 class ClusteredWorker(AbstractWorker):
     def __init__(self, app, log, sock, ppid, fd, graceful_timeout=60.0):
         super().__init__(app, log)
+
+        if isinstance(app, ClusteredApplication):
+            app.initialize()
 
         self._ppid = ppid
         self._fd = fd  # write socket descriptor for child process
